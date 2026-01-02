@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kit-pm"
+version = "0.1.0"
+description = "Kit - HumoticaOS Package Manager & AI Security Gateway"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "HumoticaOS Team", email = "info@humotica.com"},
+    {name = "Jasper van de Meent"},
+]
+keywords = [
+    "package-manager",
+    "ai-security",
+    "humotica",
+    "mcp",
+    "jis",
+    "snaft"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: System :: Installation/Setup",
+    "Topic :: System :: Software Distribution",
+]
+dependencies = [
+    "requests>=2.28.0",
+]
+
+[project.optional-dependencies]
+ai = [
+    "ollama>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://humotica.com"
+Documentation = "https://github.com/jaspertvdm/KIT"
+Repository = "https://github.com/jaspertvdm/KIT"
+Issues = "https://github.com/jaspertvdm/KIT/issues"
+
+[project.scripts]
+kit = "kit_pm.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kit_pm"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/README.md",
+    "/LICENSE",
+]
