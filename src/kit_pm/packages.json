@@ -1,28 +1,30 @@
 {
   "registry": {
     "name": "HumoticaOS Package Registry",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "updated": "2026-01-02",
-    "url": "https://humotica.com/packages"
+    "total_packages": 10,
+    "pypi_url": "https://pypi.org/user/jaspertvdm/",
+    "github_url": "https://github.com/jaspertvdm"
   },
   "packages": {
     "humotica": {
-      "name": "HumoticaOS Core",
-      "version": "0.5.0",
-      "description": "Complete HumoticaOS stack - Brain API, RABEL, AInternet",
+      "name": "HumoticaOS Protocol Stack",
+      "version": "0.2.0",
+      "description": "Complete HumoticaOS stack - AInternet (network), JIS (security), TIBET (audit)",
+      "pypi": "humotica",
       "type": "meta",
-      "includes": ["brain-api", "rabel", "ainternet", "tibet"],
       "trust_score": 0.98,
       "author": "HumoticaOS Team",
       "jis_compliant": true,
       "snaft_verified": true,
       "default": true,
-      "post_install": "kit doctor && echo 'HumoticaOS ready! One Love, One fAmIly!'"
+      "on_pypi": true
     },
     "rabel": {
       "name": "RABEL MCP Server",
       "version": "0.4.1",
-      "description": "Memory layer + I-Poll AI communication",
+      "description": "Local-first AI memory with semantic search, graph relations, and Remote Mode for cross-machine AI communication",
       "pypi": "mcp-server-rabel",
       "trust_score": 0.95,
       "dependencies": [],
@@ -33,196 +35,135 @@
       "author": "HumoticaOS Team",
       "jis_compliant": true,
       "snaft_verified": true,
-      "core_db": "~/.rabel/memories.sqlite"
+      "on_pypi": true
     },
     "ainternet": {
-      "name": "AInternet Protocol Stack",
+      "name": "AInternet Protocol",
       "version": "0.2.5",
-      "description": "AI-native internet met .aint domains + AINS",
+      "description": "Internet for AI - DNS (.aint domains), Email (I-Poll messaging), P2P communication between AI agents",
       "pypi": "ainternet",
       "trust_score": 0.92,
       "dependencies": [],
       "author": "HumoticaOS Team",
       "jis_compliant": true,
-      "snaft_verified": true
+      "snaft_verified": true,
+      "on_pypi": true
     },
     "tibet": {
       "name": "TIBET MCP Server",
       "version": "0.1.2",
-      "description": "Trust + Intent Based Token provenance system",
+      "description": "Transaction/Interaction-Based Evidence Trail - Trust & provenance for AI systems",
       "pypi": "mcp-server-tibet",
-      "npm": "@anthropic/mcp-server-tibet",
       "trust_score": 0.90,
       "dependencies": ["ainternet"],
       "mcp_config": {
-        "command": "npx -y @anthropic/mcp-server-tibet",
+        "command": "uv run mcp-server-tibet",
         "transport": "stdio"
       },
       "author": "HumoticaOS Team",
       "jis_compliant": true,
       "snaft_verified": true,
-      "core_db": "~/.tibet/tokens.sqlite"
+      "on_pypi": true
     },
-    "brain-api": {
-      "name": "Brain API",
-      "version": "0.8.0",
-      "description": "Central nervous system - REST API gateway",
-      "type": "service",
-      "trust_score": 0.95,
-      "dependencies": ["rabel", "ainternet"],
-      "systemd_service": "brain-api",
-      "port": 8000,
-      "author": "HumoticaOS Team",
-      "jis_compliant": true,
-      "snaft_verified": true
-    },
-    "gemini-bridge-cli": {
-      "name": "Gemini Bridge CLI",
+    "kit-pm": {
+      "name": "Kit Package Manager",
       "version": "0.1.0",
-      "description": "CLI tool om met Gemini te communiceren via I-Poll",
-      "pypi": "gemini-bridge-cli",
-      "trust_score": 0.88,
-      "dependencies": ["rabel"],
-      "author": "HumoticaOS Team",
-      "jis_compliant": true,
-      "snaft_verified": true,
-      "cli_commands": ["gemini-chat", "gemini-analyze", "gemini-vision"]
-    },
-    "codex-analyzer": {
-      "name": "Codex Code Analyzer",
-      "version": "0.1.0",
-      "description": "Code analyse tool - GEEN edit rechten, alleen analyse",
-      "pypi": "codex-analyzer",
-      "trust_score": 0.85,
-      "dependencies": [],
-      "author": "HumoticaOS Team",
-      "jis_compliant": true,
-      "snaft_verified": true,
-      "permissions": {
-        "read": true,
-        "write": false,
-        "execute": false
-      },
-      "cli_commands": ["codex-scan", "codex-explain", "codex-review"]
-    },
-    "oomllama": {
-      "name": "OomLlama Gateway",
-      "version": "0.3.0",
-      "description": "Lokale LLM gateway - Turbo (snel) en Smart (slim) modes",
-      "type": "service",
-      "trust_score": 0.92,
-      "dependencies": [],
-      "requires": {
-        "ollama": ">=0.3.0",
-        "gpu": "recommended"
-      },
-      "author": "HumoticaOS Team",
-      "jis_compliant": true,
-      "snaft_verified": true,
-      "endpoints": {
-        "turbo": "/api/turbo",
-        "smart": "/api/smart",
-        "kit": "/api/kit"
-      }
-    },
-    "kit-security": {
-      "name": "Kit Security Scanner",
-      "version": "0.1.0",
-      "description": "Security scanning tools - prompt injection, XSS, SQLi detection",
-      "pypi": "kit-security",
-      "trust_score": 0.94,
-      "dependencies": ["kit"],
-      "author": "HumoticaOS Team",
-      "jis_compliant": true,
-      "snaft_verified": true,
-      "cli_commands": ["kit-scan", "kit-audit", "kit-harden"]
-    },
-    "kit": {
-      "name": "Kit AI Security Gateway",
-      "version": "0.1.0",
-      "description": "De Rechter - AI security validation en package management",
-      "type": "model",
-      "model_source": "humotica/kit",
+      "description": "HumoticaOS Package Manager & AI Security Gateway - validates packages against JIS/SNAFT",
+      "pypi": "kit-pm",
       "trust_score": 0.96,
-      "dependencies": ["oomllama"],
-      "author": "HumoticaOS Team",
-      "jis_compliant": true,
-      "snaft_verified": true,
-      "core_db": "~/.kit/rules.sqlite",
-      "capabilities": ["validate", "install", "audit", "route"]
-    },
-    "snaft": {
-      "name": "SNAFT Enforcement Engine",
-      "version": "0.2.0",
-      "description": "De Politie - Security enforcement en access control",
-      "pypi": "snaft",
-      "trust_score": 0.94,
-      "dependencies": ["kit", "tibet"],
-      "author": "HumoticaOS Team",
-      "jis_compliant": true,
-      "snaft_verified": true,
-      "core_db": "~/.snaft/policies.sqlite"
-    },
-    "jis": {
-      "name": "JIS Protocol Implementation",
-      "version": "0.3.0",
-      "description": "De Wet - Jasper Intent Specification protocol",
-      "pypi": "jis-protocol",
-      "trust_score": 0.97,
       "dependencies": [],
       "author": "HumoticaOS Team",
       "jis_compliant": true,
-      "snaft_verified": true
+      "snaft_verified": true,
+      "cli_commands": ["kit"],
+      "on_pypi": true
     },
     "inject-bender": {
-      "name": "Inject Bender 2.0",
+      "name": "Inject Bender MCP",
       "version": "2.0.0",
-      "description": "Security through absurdity - maakt aanvallen om tot Hike reclames",
-      "pypi": "inject-bender",
+      "description": "Security Through Absurdity - Transform attacks into hiking boot advertisements",
+      "pypi": "mcp-server-inject-bender",
       "trust_score": 0.91,
-      "dependencies": ["oomllama"],
+      "dependencies": [],
+      "mcp_config": {
+        "command": "uv run mcp-server-inject-bender",
+        "transport": "stdio"
+      },
       "author": "HumoticaOS Team",
       "jis_compliant": true,
       "snaft_verified": true,
-      "guardians": ["Skippie 📎", "Odin ⚡"]
+      "on_pypi": true
     },
-    "heart-itl": {
-      "name": "Heart-in-the-Loop Control",
+    "tibet-chip": {
+      "name": "TIBET Safety Chip",
       "version": "0.1.0",
-      "description": "Jasper's hartslag in het systeem - human approval flows",
-      "pypi": "heart-itl",
-      "trust_score": 0.99,
-      "dependencies": ["rabel"],
+      "description": "Hardware-like AI Security at TPM Cost - virtual security chip for AI systems",
+      "pypi": "tibet-chip",
+      "trust_score": 0.88,
+      "dependencies": ["tibet"],
       "author": "HumoticaOS Team",
       "jis_compliant": true,
       "snaft_verified": true,
-      "requires_human": true
+      "on_pypi": true
     },
-    "aint-resolver": {
-      "name": "AInternet Resolver",
+    "openai-bridge": {
+      "name": "OpenAI Bridge MCP",
       "version": "0.1.0",
-      "description": "DNS voor .aint domains - resolve AI agent addresses",
-      "pypi": "aint-resolver",
+      "description": "Use OpenAI GPT/o1 from any MCP-compatible AI",
+      "pypi": "mcp-server-openai-bridge",
+      "trust_score": 0.85,
+      "dependencies": [],
+      "mcp_config": {
+        "command": "uv run mcp-server-openai-bridge",
+        "transport": "stdio",
+        "env": {"OPENAI_API_KEY": "required"}
+      },
+      "author": "HumoticaOS Team",
+      "jis_compliant": true,
+      "snaft_verified": true,
+      "on_pypi": true
+    },
+    "gemini-bridge": {
+      "name": "Gemini Bridge MCP",
+      "version": "0.1.0",
+      "description": "Use Google Gemini from any MCP-compatible AI",
+      "pypi": "mcp-server-gemini-bridge",
+      "trust_score": 0.85,
+      "dependencies": [],
+      "mcp_config": {
+        "command": "uv run mcp-server-gemini-bridge",
+        "transport": "stdio",
+        "env": {"GOOGLE_API_KEY": "required"}
+      },
+      "author": "HumoticaOS Team",
+      "jis_compliant": true,
+      "snaft_verified": true,
+      "on_pypi": true
+    },
+    "ollama-bridge": {
+      "name": "Ollama Bridge MCP",
+      "version": "0.1.0",
+      "description": "Use local LLMs (Ollama) from any MCP-compatible AI - no API keys needed",
+      "pypi": "mcp-server-ollama-bridge",
       "trust_score": 0.90,
-      "dependencies": ["ainternet"],
+      "dependencies": [],
+      "mcp_config": {
+        "command": "uv run mcp-server-ollama-bridge",
+        "transport": "stdio"
+      },
       "author": "HumoticaOS Team",
       "jis_compliant": true,
-      "snaft_verified": true
+      "snaft_verified": true,
+      "on_pypi": true
     }
   },
   "categories": {
-    "core": ["humotica", "brain-api", "rabel", "ainternet", "tibet"],
-    "security": ["kit", "snaft", "jis", "kit-security", "inject-bender"],
-    "ai-bridges": ["gemini-bridge-cli", "codex-analyzer", "oomllama"],
-    "utils": ["heart-itl", "aint-resolver"]
+    "core": ["humotica", "rabel", "ainternet", "tibet"],
+    "security": ["kit-pm", "inject-bender", "tibet-chip"],
+    "bridges": ["openai-bridge", "gemini-bridge", "ollama-bridge"]
   },
-  "install_order": [
-    "jis",
-    "ainternet",
-    "tibet",
-    "rabel",
-    "kit",
-    "snaft",
-    "brain-api"
-  ]
+  "requirements": {
+    "python": ">=3.9",
+    "note": "All packages work on Python 3.9+ with minimal dependencies"
+  }
 }

@@ -7,7 +7,7 @@ before allowing them into your system.
 One Love, One fAmIly!
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __author__ = "HumoticaOS Team"
 
 from .core import PackageRegistry, KitValidator

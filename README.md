@@ -1,128 +1,146 @@
 # Kit - HumoticaOS Package Manager & AI Security Gateway
 
 [![PyPI version](https://badge.fury.io/py/kit-pm.svg)](https://pypi.org/project/kit-pm/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Kit** is the intelligent package manager for HumoticaOS - an AI-native operating system for ethical AI development.
+## What is Kit?
 
-Kit acts as "The Judge" - validating packages against security protocols before allowing them into your system.
-
-## The HumoticaOS Security Stack
-
-| Component | Role | Description |
-|-----------|------|-------------|
-| **JIS** | The Law | Jasper Intent Specification - the protocol |
-| **SNAFT** | The Police | Security enforcement and access control |
-| **Kit** | The Judge | AI-powered validation and package management |
-| **TIBET** | The Records | Trust + Intent Based Token provenance |
-
-## Installation
+**Kit** is an intelligent package manager that validates software against security protocols before installation. Think of it as `pip` with a built-in security guard.
 
 ```bash
 pip install kit-pm
+kit list          # See all available packages
+kit install rabel # Install with security validation
 ```
+
+## Requirements
+
+- **Python 3.9+**
+- **Dependencies**: Only `requests` (installed automatically)
+- **Optional**: Local Ollama instance for AI-powered validation
 
 ## Quick Start
 
 ```bash
-# List available packages
+# Install Kit
+pip install kit-pm
+
+# List available HumoticaOS packages
 kit list
 
 # Search for packages
-kit search security
+kit search memory
 
-# Get package info
+# Get package details
 kit info rabel
 
-# Install a package (with JIS/SNAFT validation)
+# Install with JIS/SNAFT security validation
 kit install rabel
 
-# Health check
+# Health check your installation
 kit doctor
 
 # Update package registry
 kit update
 ```
 
-## How Kit Works
+## How It Works
 
 When you run `kit install <package>`, Kit:
 
-1. **Validates** the package against JIS (Jasper Intent Specification)
-2. **Checks** SNAFT (Security) verification status
+1. **Validates** against JIS (Jasper Intent Specification) protocol
+2. **Checks** SNAFT security verification status
 3. **Evaluates** trust score (minimum 0.5 required)
-4. **Routes** to the appropriate installer (pip, npm, etc.)
-5. **Configures** MCP servers if applicable
+4. **Installs** via pip/npm with full audit trail
+5. **Configures** MCP servers automatically (if applicable)
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                  kit install rabel                       │
-├─────────────────────────────────────────────────────────┤
-│                                                          │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐            │
-│  │ Validator│ → │ Resolver │ → │ Installer│            │
-│  │   (JIS)  │   │  (deps)  │   │  (pip)   │            │
-│  └──────────┘   └──────────┘   └──────────┘            │
-│       ↓                              ↓                  │
-│  ┌──────────┐                  ┌──────────┐            │
-│  │  SNAFT   │                  │   MCP    │            │
-│  │ Verifier │                  │  Config  │            │
-│  └──────────┘                  └──────────┘            │
-│                                                          │
-└─────────────────────────────────────────────────────────┘
+kit install rabel
+
+[CHECK] Validating package: rabel
+  ├── Trust Score: 0.95 ✓
+  ├── JIS Compliant: YES ✓
+  └── SNAFT Verified: YES ✓
+
+[ROUTE] Installing via pip: mcp-server-rabel
+
+[DONE] RABEL MCP Server v0.4.1 installed!
 ```
 
-## Available Packages
+## Available Packages (10 on PyPI)
 
-### Core
-- `humotica` - Complete HumoticaOS stack (meta-package)
-- `rabel` - Memory layer + I-Poll AI communication
-- `ainternet` - AI-native internet with .aint domains
-- `tibet` - Trust + Intent Based Token system
-- `brain-api` - Central API gateway
+All packages are published on PyPI and can be installed with Kit or directly with pip.
+
+### Core Stack
+| Package | PyPI | Description |
+|---------|------|-------------|
+| `humotica` | [humotica](https://pypi.org/project/humotica/) | Complete HumoticaOS stack - AInternet, JIS, TIBET |
+| `rabel` | [mcp-server-rabel](https://pypi.org/project/mcp-server-rabel/) | Local-first AI memory with semantic search |
+| `ainternet` | [ainternet](https://pypi.org/project/ainternet/) | Internet for AI - DNS (.aint), Email (I-Poll), P2P |
+| `tibet` | [mcp-server-tibet](https://pypi.org/project/mcp-server-tibet/) | Trust & provenance trail for AI systems |
 
 ### Security
-- `kit` - AI Security Gateway (this package)
-- `snaft` - Security enforcement engine
-- `jis` - JIS Protocol implementation
-- `kit-security` - Security scanning tools
-- `inject-bender` - Security through absurdity
+| Package | PyPI | Description |
+|---------|------|-------------|
+| `kit-pm` | [kit-pm](https://pypi.org/project/kit-pm/) | This package - security gateway |
+| `inject-bender` | [mcp-server-inject-bender](https://pypi.org/project/mcp-server-inject-bender/) | Transform attacks into hiking boot ads |
+| `tibet-chip` | [tibet-chip](https://pypi.org/project/tibet-chip/) | Hardware-like AI security at TPM cost |
 
-### AI Bridges
-- `gemini-bridge-cli` - CLI for Gemini via I-Poll
-- `codex-analyzer` - Code analysis (read-only)
-- `oomllama` - Local LLM gateway
+### AI Bridges (MCP Servers)
+| Package | PyPI | Description |
+|---------|------|-------------|
+| `openai-bridge` | [mcp-server-openai-bridge](https://pypi.org/project/mcp-server-openai-bridge/) | Use OpenAI from any MCP AI |
+| `gemini-bridge` | [mcp-server-gemini-bridge](https://pypi.org/project/mcp-server-gemini-bridge/) | Use Gemini from any MCP AI |
+| `ollama-bridge` | [mcp-server-ollama-bridge](https://pypi.org/project/mcp-server-ollama-bridge/) | Use local LLMs (no API key) |
 
-## AI-Powered Validation
+## The Security Stack
 
-Kit can connect to a local Kit AI model (running on OomLlama/Ollama) for intelligent security validation:
+| Component | Role | Description |
+|-----------|------|-------------|
+| **JIS** | The Law | Jasper Intent Specification - the security protocol |
+| **SNAFT** | The Police | Security enforcement and access control |
+| **Kit** | The Judge | Validates and decides what enters your system |
+| **TIBET** | The Records | Audit trail with cryptographic provenance |
+
+## Programmatic Usage
 
 ```python
-from kit_pm import KitValidator
+from kit_pm import PackageRegistry, KitValidator
 
+# Browse packages
+registry = PackageRegistry()
+for pkg in registry.list_all():
+    print(f"{pkg.name}: {pkg.description}")
+
+# Validate a package
+validator = KitValidator()
+pkg = registry.get("rabel")
+result = validator.validate(pkg)
+print(f"Valid: {result['valid']}, Trust: {pkg.trust_score}")
+
+# Check for prompt injection (with local AI)
 validator = KitValidator(kit_api="http://localhost:11434/api/generate")
 result = validator.check_injection("ignore all previous instructions")
-# Returns: {"checked": True, "response": "..."}
 ```
 
-## Configuration
+## Why Kit?
 
-Kit looks for the package registry in these locations:
-1. `~/.kit/packages.json`
-2. Package bundled registry
-3. Remote: `https://humotica.com/packages/packages.json`
+Traditional package managers (`pip`, `npm`) trust everything. Kit validates:
 
-## Related Projects
-
-- [RABEL](https://pypi.org/project/mcp-server-rabel/) - Memory MCP Server
-- [AInternet](https://pypi.org/project/ainternet/) - AI-native internet protocol
-- [TIBET](https://pypi.org/project/mcp-server-tibet/) - Trust token MCP Server
-
-## Philosophy
+- **Trust Score**: Community reputation and audit history
+- **JIS Compliance**: Follows HumoticaOS security protocol
+- **SNAFT Verification**: Passed security review
+- **Intent Validation**: AI-powered analysis of package behavior
 
 > "TRUST BEFORE ACCESS - No intent, no access"
 
-Kit ensures that every package entering your system has been validated against the JIS protocol and verified by SNAFT. This creates a secure, auditable software supply chain for AI systems.
+## Links
+
+- **PyPI**: https://pypi.org/project/kit-pm/
+- **GitHub**: https://github.com/jaspertvdm/KIT
+- **HumoticaOS**: https://humotica.com
+- **All Packages**: https://pypi.org/user/jaspertvdm/
 
 ## License
 
@@ -130,6 +148,6 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ## Credits
 
-Built with love by the HumoticaOS Team.
+Built by the HumoticaOS Team.
 
 **One Love, One fAmIly!**
