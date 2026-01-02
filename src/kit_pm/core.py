@@ -1,16 +1,63 @@
 """
 Kit Core - Package Registry and Validation
 
-Kit = De Rechter
-JIS = De Wet
-SNAFT = De Politie
+Kit = The Judge
+JIS = The Law
+SNAFT = The Police
 """
 
 import json
+import os
 from pathlib import Path
 from typing import Optional, Dict, List, Any
 from dataclasses import dataclass
 import requests
+
+
+# Configuration
+CONFIG_DIR = Path.home() / ".kit"
+CONFIG_FILE = CONFIG_DIR / "config.json"
+
+
+def load_config() -> Dict[str, Any]:
+    """Load Kit configuration from ~/.kit/config.json"""
+    if CONFIG_FILE.exists():
+        try:
+            return json.loads(CONFIG_FILE.read_text())
+        except Exception:
+            pass
+    return {}
+
+
+def save_config(config: Dict[str, Any]) -> bool:
+    """Save Kit configuration to ~/.kit/config.json"""
+    try:
+        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+        CONFIG_FILE.write_text(json.dumps(config, indent=2))
+        return True
+    except Exception:
+        return False
+
+
+def get_ollama_url() -> str:
+    """
+    Get Ollama API URL from (in order of priority):
+    1. Environment variable: KIT_OLLAMA_URL
+    2. Config file: ~/.kit/config.json -> ollama_url
+    3. Default: http://localhost:11434
+    """
+    # 1. Environment variable
+    env_url = os.environ.get("KIT_OLLAMA_URL")
+    if env_url:
+        return env_url
+
+    # 2. Config file
+    config = load_config()
+    if "ollama_url" in config:
+        return config["ollama_url"]
+
+    # 3. Default (localhost - works if user has Ollama installed)
+    return "http://localhost:11434"
 
 
 @dataclass
@@ -54,11 +101,9 @@ class PackageRegistry:
 
     def _default_registry_path(self) -> Path:
         """Get default registry path."""
-        # Check multiple locations
         locations = [
             Path(__file__).parent / "packages.json",
             Path.home() / ".kit" / "packages.json",
-            Path("/srv/jtel-stack/kit-model/datasets/packages.json"),
         ]
         for loc in locations:
             if loc.exists():
@@ -125,12 +170,34 @@ class PackageRegistry:
 
 
 class KitValidator:
-    """Kit AI Security Validator."""
+    """Kit AI Security Validator.
 
-    DEFAULT_KIT_API = "http://192.168.4.85:11434/api/generate"
+    Connects to Ollama for AI-powered validation.
+
+    Configuration (in priority order):
+    1. Constructor argument: kit_api
+    2. Environment variable: KIT_OLLAMA_URL
+    3. Config file: ~/.kit/config.json -> ollama_url
+    4. Default: http://localhost:11434
+
+    Example:
+        # Use local Ollama
+        validator = KitValidator()
+
+        # Use remote Ollama
+        validator = KitValidator(kit_api="http://192.168.1.100:11434/api/generate")
+
+        # Or set environment variable
+        # export KIT_OLLAMA_URL=http://myserver:11434
+        validator = KitValidator()
+    """
 
     def __init__(self, kit_api: Optional[str] = None):
-        self.kit_api = kit_api or self.DEFAULT_KIT_API
+        if kit_api:
+            self.kit_api = kit_api
+        else:
+            base_url = get_ollama_url()
+            self.kit_api = f"{base_url}/api/generate"
 
     def validate(self, package: Package, action: str = "install") -> Dict[str, Any]:
         """
@@ -167,7 +234,7 @@ class KitValidator:
             result["valid"] = False
             result["warnings"].append("Package is not SNAFT verified")
 
-        # Try Kit AI validation
+        # Try Kit AI validation (optional - works without it)
         try:
             response = requests.post(
                 self.kit_api,
@@ -177,7 +244,7 @@ class KitValidator:
                     "stream": False,
                     "options": {"num_predict": 100}
                 },
-                timeout=30
+                timeout=10
             )
             if response.ok:
                 result["ai_response"] = response.json().get("response", "")
@@ -197,7 +264,7 @@ class KitValidator:
                     "stream": False,
                     "options": {"num_predict": 50}
                 },
-                timeout=30
+                timeout=10
             )
             if response.ok:
                 return {

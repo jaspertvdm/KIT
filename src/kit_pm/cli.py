@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Kit CLI - HumoticaOS Package Manager
-De Rechter die beslist welke packages je systeem mogen betreden.
+The Judge that validates packages before allowing them into your system.
 
 Usage:
     kit install <package>
@@ -10,6 +10,7 @@ Usage:
     kit info <package>
     kit doctor
     kit update
+    kit config [--ollama-url URL]
 """
 
 import argparse
@@ -20,7 +21,7 @@ from pathlib import Path
 from typing import Optional
 import requests
 
-from .core import PackageRegistry, KitValidator
+from .core import PackageRegistry, KitValidator, load_config, save_config, get_ollama_url
 
 
 # Colors for terminal output
@@ -44,7 +45,7 @@ def print_banner():
     print(c("""
 ╔═══════════════════════════════════════════════════╗
 ║      Kit - HumoticaOS Package Manager             ║
-║      De Rechter van het Systeem                   ║
+║      The Judge of the System                      ║
 ╚═══════════════════════════════════════════════════╝
 """, Colors.CYAN))
 
@@ -186,10 +187,11 @@ def cmd_doctor(args, registry: PackageRegistry, validator: KitValidator):
     """Health check of HumoticaOS components."""
     print(c(f"\n[DOCTOR] HumoticaOS Health Check\n", Colors.YELLOW))
 
+    # Get configured Ollama URL
+    ollama_url = get_ollama_url()
+
     checks = [
-        ("Brain API", "http://localhost:8000/health"),
-        ("Kit Model", "http://192.168.4.85:11434/api/tags"),
-        ("OomLlama", "http://192.168.4.85:11434"),
+        ("Ollama (local)", f"{ollama_url}/api/tags"),
     ]
 
     all_ok = True
@@ -202,8 +204,7 @@ def cmd_doctor(args, registry: PackageRegistry, validator: KitValidator):
                 print(c(f"  ✗ {name}: DOWN ({r.status_code})", Colors.RED))
                 all_ok = False
         except Exception:
-            print(c(f"  ✗ {name}: UNREACHABLE", Colors.RED))
-            all_ok = False
+            print(c(f"  ○ {name}: not running (optional)", Colors.YELLOW))
 
     # Check core packages
     print(c(f"\n[CHECK] Core Packages\n", Colors.YELLOW))
@@ -218,11 +219,12 @@ def cmd_doctor(args, registry: PackageRegistry, validator: KitValidator):
         else:
             print(c(f"  ○ {pkg_name}: not installed", Colors.YELLOW))
 
-    if all_ok:
-        print(c(f"\n[OK] All systems operational!", Colors.GREEN))
-    else:
-        print(c(f"\n[WARNING] Some systems need attention", Colors.YELLOW))
+    # Show config
+    print(c(f"\n[CONFIG] Current Configuration\n", Colors.YELLOW))
+    print(f"  Ollama URL: {ollama_url}")
+    print(f"  Config file: ~/.kit/config.json")
 
+    print(c(f"\n[OK] Health check complete!", Colors.GREEN))
     return 0
 
 
@@ -234,6 +236,40 @@ def cmd_update(args, registry: PackageRegistry, validator: KitValidator):
         print(c(f"  ✓ Registry updated", Colors.GREEN))
     else:
         print(c(f"  Using local registry (remote unavailable)", Colors.YELLOW))
+
+    return 0
+
+
+def cmd_config(args, registry: PackageRegistry, validator: KitValidator):
+    """Configure Kit settings."""
+    config = load_config()
+
+    if args.ollama_url:
+        # Set Ollama URL
+        config["ollama_url"] = args.ollama_url
+        if save_config(config):
+            print(c(f"\n[CONFIG] Ollama URL set to: {args.ollama_url}", Colors.GREEN))
+        else:
+            print(c(f"\n[ERROR] Could not save config", Colors.RED))
+            return 1
+    elif args.show:
+        # Show current config
+        print(c(f"\n[CONFIG] Current Configuration\n", Colors.YELLOW))
+        ollama_url = get_ollama_url()
+        print(f"  Ollama URL: {ollama_url}")
+        print(f"  Config file: ~/.kit/config.json")
+        print(f"\n  Set with: kit config --ollama-url http://your-server:11434")
+        print(f"  Or env:   export KIT_OLLAMA_URL=http://your-server:11434")
+    else:
+        # Show help
+        print(c(f"\n[CONFIG] Kit Configuration\n", Colors.YELLOW))
+        print(f"  Current Ollama URL: {get_ollama_url()}")
+        print(f"\n  Options:")
+        print(f"    kit config --show              Show current config")
+        print(f"    kit config --ollama-url URL    Set Ollama server URL")
+        print(f"\n  Environment variables:")
+        print(f"    KIT_OLLAMA_URL                 Override Ollama URL")
+        print(f"\n  Config file: ~/.kit/config.json")
 
     return 0
 
@@ -271,6 +307,11 @@ def main():
     # update
     subparsers.add_parser("update", help="Update package registry")
 
+    # config
+    config_parser = subparsers.add_parser("config", help="Configure Kit settings")
+    config_parser.add_argument("--ollama-url", help="Set Ollama server URL")
+    config_parser.add_argument("--show", action="store_true", help="Show current config")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -289,6 +330,7 @@ def main():
         "info": cmd_info,
         "doctor": cmd_doctor,
         "update": cmd_update,
+        "config": cmd_config,
     }
 
     return commands[args.command](args, registry, validator)
